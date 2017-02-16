@@ -1,29 +1,29 @@
 from stack import Stack
 
 result = Stack()
+glo_stack = Stack()
 
 def depth_first_search(dictionary, vertex):
-    if vertex not in result.show_stack():
-        result.push(vertex)
-    if dictionary == {}:
-        return
-    if vertex in dictionary.keys():
-        if dictionary[vertex] == []:
-            dictionary.pop(vertex)
-            depth_first_search(dictionary, result.get_item())
+    result.push(vertex)
+    glo_stack.push(vertex)
+    pivot = glo_stack.get_item()
+    while glo_stack.show_stack() != []:
+        if pivot in dictionary.keys():
+            if dictionary[pivot] != []:
+                while dictionary[pivot] != []:
+                    result.push(min(dictionary[pivot]))
+                    glo_stack.push(min(dictionary[pivot]))
+                    dictionary[pivot].remove(glo_stack.get_item())
+                    pivot = glo_stack.get_item()
+                    if pivot not in dictionary.keys():
+                        dictionary[pivot] = []
+            else:
+                glo_stack.pop_value()
+                pivot = glo_stack.get_item()
         else:
-            for repeated in dictionary[vertex]:
-                if repeated in result.show_stack():
-                    dictionary[vertex].remove(repeated)
-            min_val = min(dictionary[vertex])
-            # REMOVE MIN VAL IF IT'S VISITED
-            dictionary[vertex].remove(min_val)
-            depth_first_search(dictionary, min_val)
-    else:
-        depth_first_search(dictionary, result.show_stack()[result.show_stack().index(vertex)-1])
-
-    
-
+            glo_stack.pop_value()
+            pivot = glo_stack.get_item()
+                
 def read_file():
     dic = {}
     with open('arcs.txt','r+') as ofs:
@@ -39,6 +39,7 @@ def read_file():
             else:
                 dic[first_ele] = [second_ele]
     print dic
+    # Start point
     depth_first_search(dic, "S")
     print result.show_stack()
     
